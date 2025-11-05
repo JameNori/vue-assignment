@@ -1,16 +1,39 @@
 <template>
   <div class="course-list">
     <div class="course-card">
-      <h3>ชื่อคอร์ส: ...</h3>
-      <p>ราคา: ... บาท</p>
-      <button>เพิ่มในรายการโปรด</button>
+      <h3>ชื่อคอร์ส: {{ course.title }}</h3>
+      <p>ราคา: {{ course.price }} บาท</p>
+      <button
+        :disabled="isUsernameEmpty"
+        @click="addToFavorites"
+        :class="{ disabled: isUsernameEmpty }"
+      >
+        เพิ่มในรายการโปรด
+      </button>
     </div>
   </div>
 </template>
 
 <script setup>
 // TODO: import { useFavoriteStore } แล้วเขียนฟังก์ชันเพิ่มคอร์สลง store
+import { computed } from "vue";
+import { useFavoriteStore } from "../stores/favorite";
 // TODO: defineProps({ course: Object })
+const props = defineProps({
+  course: {
+    type: Object,
+    required: true,
+  },
+});
+
+const store = useFavoriteStore();
+const isUsernameEmpty = computed(() => store.username.trim() === "");
+
+const addToFavorites = () => {
+  if (!isUsernameEmpty.value) {
+    store.addFavorite(props.course);
+  }
+};
 </script>
 
 <style scoped>
@@ -55,5 +78,11 @@ button {
 
 button:hover {
   background-color: #2c9c6d;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 </style>
